@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+	service.Connection()
+
 	go service.RunMessageServer()
 
 	r := gin.Default()

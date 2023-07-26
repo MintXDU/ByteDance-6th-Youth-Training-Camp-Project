@@ -29,4 +29,11 @@ test 目录下为不同场景的功能测试case，可用于验证功能实现�
 
 ## 需要做的
 1. 数据目前是以对象的形式存在内存中的，需要把在内存中的数据存在数据库中
-2. 
+
+
+### GORM
+#### 安装
+```
+go get -u gorm.io/gorm
+go get -u gorm.io/driver/mysql
+```
