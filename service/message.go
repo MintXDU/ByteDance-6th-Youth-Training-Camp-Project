@@ -3,10 +3,11 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/RaymondCode/simple-demo/controller"
 	"io"
 	"net"
 	"sync"
+
+	"github.com/RaymondCode/simple-demo/dao"
 )
 
 var chatConnMap = sync.Map{}
@@ -43,7 +44,7 @@ func process(conn net.Conn) {
 			continue
 		}
 
-		var event = controller.MessageSendEvent{}
+		var event = dao.MessageSendEvent{}
 		_ = json.Unmarshal(buf[:n], &event)
 		fmt.Printf("Receive Message：%+v\n", event)
 
@@ -60,7 +61,7 @@ func process(conn net.Conn) {
 			continue
 		}
 
-		pushEvent := controller.MessagePushEvent{
+		pushEvent := dao.MessagePushEvent{
 			FromUserId: event.UserId,
 			MsgContent: event.MsgContent,
 		}
