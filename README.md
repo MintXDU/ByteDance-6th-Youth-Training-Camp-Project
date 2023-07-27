@@ -1,5 +1,13 @@
 # 开发项目
 
+## 上传到1024平台上进行测试
+必须要一个文件夹一个文件上传，不然没有权限(1024真不好用)
+
+```shell
+go build && ./simple-demo
+```
+必须是直接运行可执行文件，不能 `go run main.go`!!!
+
 ## 需要做的
 1. 数据目前是以对象的形式存在内存中的，需要把在内存中的数据存在数据库中
 
@@ -28,7 +36,7 @@ go get -u gorm.io/driver/mysql
 type Video struct {
 	Id             int64  `json:"id,omitempty"`
 	UserId         int64  `json:"user_id,omitempty"`
-	Author         User   `gorm:"foreignKey:UserId,omitempty"`
+	Author         User   `gorm:"foreignKey:UserId"`
 	PlayUrl        string `json:"play_url,omitempty"`
 	CoverUrl       string `json:"cover_url,omitempty"`
 	FavoriteCount  int64  `json:"favorite_count,omitempty"`
