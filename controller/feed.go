@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,12 +17,18 @@ type FeedResponse struct {
 
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
+	// Get the latest 10 videos.
+	var videos = []dao.Video{}
+
+	db := service.Connection()
+	db.Order("submission_time desc").Limit(10).Preload("Author").Find(&videos)
+
 	c.JSON(http.StatusOK, FeedResponse{
 		Response: dao.Response{
 			StatusCode: 0,
-			StatusMsg:  "string",
+			StatusMsg:  "Get videos successfully",
 		},
-		VideoList: DemoVideos,
+		VideoList: videos,
 		NextTime:  time.Now().Unix(),
 	})
 }
