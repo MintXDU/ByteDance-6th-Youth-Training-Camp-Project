@@ -8,7 +8,36 @@ go build && ./simple-demo
 ```
 必须是直接运行可执行文件，不能 `go run main.go`!!!
 
-## 需要做的
+## 需要做的接口
+**基础接口**
+| API | 名称 | 是否完成 | 完成者 |
+| --- | --- | --- | --- |
+| /douyin/feed/ | 视频接口流 | 是 | MintXDU |
+| /douyin/user/register/ | 用户注册 | 是 | MintXDU |
+| /douyin/user/login/ | 用户登录 | 否 |  |
+| /douyin/user/ | 用户信息 | 否 |  |
+| /douyin/publish/action/ | 投稿接口 | 否 |  |
+| /douyin/publish/list/ | 发布列表 | 否 |  |
+
+**互动接口**
+| API | 名称 | 是否完成 | 完成者 |
+| --- | --- | --- | --- |
+| /douyin/favorite/action/ | 赞操作 | 否 |  |
+| /douyin/favorite/list/ | 喜欢列表 | 否 |  |
+| /douyin/comment/action/ | 评论操作 | 否 |  |
+| /douyin/comment/list/ | 评论列表 | 否 |  |
+
+**社交接口**
+| API | 名称 | 是否完成 | 完成者 |
+| --- | --- | --- | --- |
+| /douyin/relation/action/ | 关注操作 | 否 |  |
+| /douyin/relation/follow/list/ | 关注列表 | 否 |  |
+| /douyin/relation/follower/list/ | 粉丝列表 | 否 |  |
+| /douyin/relation/friend/list/ | 好友列表 | 否 |  |
+| /douyin/message/action/ | 发送消息 | 否 |  |
+| /douyin/message/chat/ | 聊天记录 | 否 |  |
+
+## 需要做的事
 1. 数据目前是以对象的形式存在内存中的，需要把在内存中的数据存在数据库中
 
 ## 项目结构
