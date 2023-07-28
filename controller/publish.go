@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strconv"
+	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
 	"github.com/RaymondCode/simple-demo/service"
@@ -40,6 +42,13 @@ func Publish(c *gin.Context) {
 	filename := filepath.Base(data.Filename)
 	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
 	saveFile := filepath.Join("./public/", finalName)
+	newVideo := dao.Video{
+		UserId:         user.Id,
+		PlayUrl:        "./public" + finalName,
+		SubmissionTime: strconv.FormatInt(time.Now().Unix(), 10),
+	}
+	db.Create(&newVideo)
+
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
 		c.JSON(http.StatusOK, dao.Response{
 			StatusCode: 1,
