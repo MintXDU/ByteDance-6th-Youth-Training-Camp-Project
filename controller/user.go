@@ -68,13 +68,19 @@ func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	token := username + password
+	// Find user by username
+	db := service.Connection()
+	var user dao.User
+	db.Where("name = ?", username).Find(&user)
 
-	if user, exist := usersLoginInfo[token]; exist {
+	if user.Password == password {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: dao.Response{StatusCode: 0},
-			UserId:   user.Id,
-			Token:    token,
+			Response: dao.Response{
+				StatusCode: 0,
+				StatusMsg:  "User login successfully",
+			},
+			UserId: user.Id,
+			Token:  username,
 		})
 	} else {
 		c.JSON(http.StatusOK, UserLoginResponse{
