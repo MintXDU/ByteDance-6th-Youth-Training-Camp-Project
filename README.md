@@ -62,6 +62,9 @@ git update-index --no-assume-unchanged ./service/mysql.go
 
 理想的单向调用链：控制层 => 业务层 => 数据层
 
+## 一些修改
+1. token 就是 username，token=username+password很奇怪，岂不是如果知道了token就能获取密码了？
+
 ### GORM
 #### 安装
 ```

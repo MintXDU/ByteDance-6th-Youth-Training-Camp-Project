@@ -92,10 +92,17 @@ func Login(c *gin.Context) {
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
 
-	if user, exist := usersLoginInfo[token]; exist {
+	// Find user by token(i.e. username)
+	db := service.Connection()
+	var user dao.User
+
+	if result := db.Where("name = ?", token).First(&user); result.Error == nil {
 		c.JSON(http.StatusOK, UserResponse{
-			Response: dao.Response{StatusCode: 0},
-			User:     user,
+			Response: dao.Response{
+				StatusCode: 0,
+				StatusMsg:  "User exist",
+			},
+			User: user,
 		})
 	} else {
 		c.JSON(http.StatusOK, UserResponse{
