@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strconv"
+	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +21,11 @@ type VideoListResponse struct {
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 
-	if _, exist := usersLoginInfo[token]; !exist {
+	// Find user by token(i.e. username)
+	db := service.Connection()
+	var user dao.User
+
+	if result := db.Where("name = ?", token).First(&user); result.Error != nil {
 		c.JSON(http.StatusOK, dao.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
 	}
@@ -33,9 +40,15 @@ func Publish(c *gin.Context) {
 	}
 
 	filename := filepath.Base(data.Filename)
-	user := usersLoginInfo[token]
 	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
 	saveFile := filepath.Join("./public/", finalName)
+	newVideo := dao.Video{
+		UserId:         user.Id,
+		PlayUrl:        "./public" + finalName,
+		SubmissionTime: strconv.FormatInt(time.Now().Unix(), 10),
+	}
+	db.Create(&newVideo)
+
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
 		c.JSON(http.StatusOK, dao.Response{
 			StatusCode: 1,

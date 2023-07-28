@@ -54,6 +54,12 @@ git update-index --no-assume-unchanged ./service/mysql.go
 ```
 命令将其从忽略列表中移除。
 
+## 一些问题
+### 请求视频
+视频对象的属性 `play_url` 需要包含 ip,但是 1024 的 ip 是经常变动的，而 localhost 又不能成功获取资源(可能是因为如果是 localhost 的话，前端无法通过 `play_url` 访问)。所以要想获取到视频有两种方法：
+1. 需要更改数据库表中的 `play_url`。
+2. 视频对象存储在云上。
+
 ## 项目结构
 - /controller 控制层
 - /service    业务层
@@ -61,6 +67,9 @@ git update-index --no-assume-unchanged ./service/mysql.go
 - /public     静态资源
 
 理想的单向调用链：控制层 => 业务层 => 数据层
+
+## 一些修改
+1. token 就是 username，token=username+password很奇怪，岂不是如果知道了token就能获取密码了？
 
 ### GORM
 #### 安装

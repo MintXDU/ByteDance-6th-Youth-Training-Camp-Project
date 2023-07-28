@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
 
@@ -22,8 +21,6 @@ var usersLoginInfo = map[string]dao.User{
 		IsFollow:      true,
 	},
 }
-
-var userIdSequence = int64(1)
 
 type UserLoginResponse struct {
 	dao.Response
@@ -52,9 +49,7 @@ func Register(c *gin.Context) {
 			Response: dao.Response{StatusCode: 1, StatusMsg: "User already exist"},
 		})
 	} else {
-		atomic.AddInt64(&userIdSequence, 1)
 		newUser := dao.User{
-			Id:       userIdSequence,
 			Name:     username,
 			Password: password,
 		}
@@ -64,8 +59,7 @@ func Register(c *gin.Context) {
 				StatusCode: 0,
 				StatusMsg:  "User registration successful",
 			},
-			UserId: userIdSequence,
-			Token:  username,
+			Token: username,
 		})
 	}
 }
@@ -74,13 +68,19 @@ func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	token := username + password
+	// Find user by username
+	db := service.Connection()
+	var user dao.User
+	db.Where("name = ?", username).Find(&user)
 
-	if user, exist := usersLoginInfo[token]; exist {
+	if user.Password == password {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: dao.Response{StatusCode: 0},
-			UserId:   user.Id,
-			Token:    token,
+			Response: dao.Response{
+				StatusCode: 0,
+				StatusMsg:  "User login successfully",
+			},
+			UserId: user.Id,
+			Token:  username,
 		})
 	} else {
 		c.JSON(http.StatusOK, UserLoginResponse{
@@ -92,10 +92,17 @@ func Login(c *gin.Context) {
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
 
-	if user, exist := usersLoginInfo[token]; exist {
+	// Find user by token(i.e. username)
+	db := service.Connection()
+	var user dao.User
+
+	if result := db.Where("name = ?", token).First(&user); result.Error == nil {
 		c.JSON(http.StatusOK, UserResponse{
-			Response: dao.Response{StatusCode: 0},
-			User:     user,
+			Response: dao.Response{
+				StatusCode: 0,
+				StatusMsg:  "User exist",
+			},
+			User: user,
 		})
 	} else {
 		c.JSON(http.StatusOK, UserResponse{
