@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
 
@@ -22,8 +21,6 @@ var usersLoginInfo = map[string]dao.User{
 		IsFollow:      true,
 	},
 }
-
-var userIdSequence = int64(1)
 
 type UserLoginResponse struct {
 	dao.Response
@@ -52,9 +49,7 @@ func Register(c *gin.Context) {
 			Response: dao.Response{StatusCode: 1, StatusMsg: "User already exist"},
 		})
 	} else {
-		atomic.AddInt64(&userIdSequence, 1)
 		newUser := dao.User{
-			Id:       userIdSequence,
 			Name:     username,
 			Password: password,
 		}
@@ -64,8 +59,7 @@ func Register(c *gin.Context) {
 				StatusCode: 0,
 				StatusMsg:  "User registration successful",
 			},
-			UserId: userIdSequence,
-			Token:  username,
+			Token: username,
 		})
 	}
 }
