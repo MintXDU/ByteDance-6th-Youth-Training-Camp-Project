@@ -32,6 +32,18 @@ CREATE TABLE `videos` (
   CONSTRAINT `videos_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- comment table
+CREATE TABLE `comment`(
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    `user_id` INT NOT NULL ,
+    `video_id` INT NOT NULL,
+    `content` VARCHAR(4096) NOT NULL ,
+    `parent_id` INT DEFAULT 0,
+    `create_time` DATETIME NOT NULL,
+    CONSTRAINT `comment_user_FK` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT,
+    CONSTRAINT `comment_video_FK` FOREIGN KEY (`video_id`) REFERENCES `videos`(`id`) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 INSERT INTO douyin.users (name,follow_count,follower_count,is_follow,password) VALUES
 	 ('zhanglei',10,5,1,'douyin'),
 	 ('1104540868',0,0,0,'123456');
