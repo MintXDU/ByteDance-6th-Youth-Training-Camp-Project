@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
-	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +19,7 @@ func Feed(c *gin.Context) {
 	// Get the latest 10 videos.
 	var videos = []dao.Video{}
 
-	db := service.Connection()
+	db := dao.Connection()
 	db.Order("submission_time desc").Limit(10).Preload("Author").Find(&videos)
 
 	c.JSON(http.StatusOK, FeedResponse{

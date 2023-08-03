@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/RaymondCode/simple-demo/dao"
-	"github.com/RaymondCode/simple-demo/service"
 )
 
 // usersLoginInfo use map to store user info, and key is username+password for demo
@@ -40,7 +39,7 @@ func Register(c *gin.Context) {
 	token := username
 
 	// Check if the username exists in the database.
-	db := service.Connection()
+	db := dao.Connection()
 	var user dao.User
 	var count int64
 
@@ -69,7 +68,7 @@ func Login(c *gin.Context) {
 	password := c.Query("password")
 
 	// Find user by username
-	db := service.Connection()
+	db := dao.Connection()
 	var user dao.User
 	db.Where("name = ?", username).Find(&user)
 
@@ -93,7 +92,7 @@ func UserInfo(c *gin.Context) {
 	token := c.Query("token")
 
 	// Find user by token(i.e. username)
-	db := service.Connection()
+	db := dao.Connection()
 	var user dao.User
 
 	if result := db.Where("name = ?", token).First(&user); result.Error == nil {

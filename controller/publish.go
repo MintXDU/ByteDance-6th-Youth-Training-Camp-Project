@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
-	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +21,7 @@ func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 
 	// Find user by token(i.e. username)
-	db := service.Connection()
+	db := dao.Connection()
 	var user dao.User
 
 	if result := db.Where("name = ?", token).First(&user); result.Error != nil {

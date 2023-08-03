@@ -31,6 +31,24 @@ CREATE TABLE `videos` (
   KEY `videos_FK` (`user_id`),
   CONSTRAINT `videos_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- douyin.follows definition
+CREATE TABLE follows (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  following_user_id INT NOT NULL,
+  followed_user_id INT NOT NULL,
+  relationship TINYINT NOT NULL,
+  UNIQUE INDEX unique_following_followed (following_user_id, followed_user_id),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- douyin.message definition
+CREATE TABLE messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  from_user_id INT NOT NULL,
+  to_user_id INT NOT NULL,
+  create_time INT NOT NULL,
+  content VARCHAR(1000) NOT NULL,
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO douyin.users (name,follow_count,follower_count,is_follow,password) VALUES
 	 ('zhanglei',10,5,1,'douyin'),
