@@ -12,6 +12,7 @@ func TestRelation(t *testing.T) {
 	userIdA, tokenA := getTestUserToken(testUserA, e)
 	userIdB, tokenB := getTestUserToken(testUserB, e)
 
+	// userA关注userB
 	relationResp := e.POST("/douyin/relation/action/").
 		WithQuery("token", tokenA).WithQuery("to_user_id", userIdB).WithQuery("action_type", 1).
 		WithFormField("token", tokenA).WithFormField("to_user_id", userIdB).WithFormField("action_type", 1).

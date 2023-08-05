@@ -13,7 +13,7 @@ which returns a DB object.
 */
 func Connection() *gorm.DB {
 	// Connect to the mysql database.
-	dsn := "mintxdu:36cfca404c076775@tcp(mysql.sqlpub.com:3306)/douyin6th?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:ljx990316@tcp(localhost:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println("Mysql database connection failed, error = " + err.Error())

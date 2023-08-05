@@ -32,3 +32,7 @@ var DemoUser = dao.User{
 	FollowerCount: 0,
 	IsFollow:      false,
 }
+
+var DemoAPIUser = dao.APIUser{
+	Id: 1,
+}

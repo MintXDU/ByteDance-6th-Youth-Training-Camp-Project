@@ -112,3 +112,71 @@ type User struct {
 1. 通过`外键`进行约束（很多线上数据库不推荐并且不支持使用外键比如 planetscale ，但是 GORM 中的 BELONG TO 关系推荐使用外键，所以在这里还是使用了外键），例如 `videos.user_id` 依赖于 `users.id`。
 2. 在结构体定义处说明本属性通过外键预加载获取，例如`gorm:"foreignKey:UserId,omitempty"`
 3. 通过预加载进行查询，例如：`db.Preload("Author").Find(&videos)`
+
+## 数据库设计
+
+### user表
+
+| 字段               | 类型            | 备注                   |
+|------------------|---------------|----------------------|
+| id               | int           | 用户主键，自增              |
+| name         | varchar(128)  | 用户名，邮箱或手机号,unique    |
+| password         | char(256)     | 密码，MD5加密存储           |
+| nickname         | varchar(64)   | 用户昵称, unique         |
+| token            | char(256)     | 登录用户token            |
+| follower_count   | int           | 粉丝数,default 0        |
+| follow_count     | int           | 关注数,default 0        |
+| avatar           | varchar(256)  | 头像地址, default 默认头像地址 |
+| signature        | varchar(128)  | 用户签名,default ""      |
+| total_favorited   | int           | 获赞总数,default 0       |
+| work_count       | int           | 作品总数,default 0       |
+| favorite_count   | int           | 喜欢作品数,default 0      |
+| background_image | varchar(1024) | 用户个人页顶部图             |
+| signup_time      | datetime      | 注册时间                 |
+
+### video作品表
+| 字段             | 类型            | 备注                 |
+|----------------|---------------|--------------------|
+| id             | int           | 作品主键，自增            |
+| title          | varchar(256)  | 作品标题，NOT NULL      |
+| description    | varchar(1024) | 作品描述               |
+| play_url       | varchar(1024) | 作品地址               |
+| user_id      | int           | 作者id，外键，关联自user.id |
+| cover_url      | varchar(1024) | 封面地址               |
+| favorite_count | int           | 视频点赞数,default 0    |
+| comment_count  | int           | 视频评论总数,default 0   |
+| submission_time   | datetime      | 发布时间               |
+
+### favour_video点赞表
+| 字段          | 类型       | 备注               |
+|-------------|----------|------------------|
+| user_id     | int      | 用户id，关联自user.id  |
+| video_id    | int      | 视频id，关联自video.id |
+| favour_time | datetime | 点赞时间             |
+
+### relationship关系表
+
+| 字段            | 类型       | 备注            |
+|---------------|----------|---------------|
+| user_id       | int      | 外键，关联自user.id |
+| followed_id   | int      | 外键，关联自user.id |
+| followed_time | datetime | 关注时间          |
+
+### comment 评论表
+| 字段          | 类型            | 备注                           |
+|-------------|---------------|------------------------------|
+| id          | int           | 主键id，自增                      |
+| user_id     | int           | 外键，关联user表                   |
+| video_id    | int           | 外键，关联video表                  |
+| parent_id   | int           | 父评论id，如果为根评论，此字段为0，default=0 |
+| content     | varchar(4096) | 评论内容，暂定最大长度4096              |
+| create_time | date_time     | 评论时间                         |
+
+###  message消息记录表
+| 字段           | 类型            | 备注                     |
+|--------------|---------------|------------------------|
+| id           | int           | 主键id，自增                |
+| to_user_id   | int           | 接受者id，外键，关联自user.id    |
+| from_user_id | int           | 发送者id，外键，关联自user.id    |
+| content      | varchar(1024) | 消息内容，目前使用varchar(1024) |
+| send_time    | datetime      | 消息发送时间                 |
