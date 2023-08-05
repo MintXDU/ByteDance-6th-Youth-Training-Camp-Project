@@ -19,20 +19,23 @@ type Video struct {
 
 type Comment struct {
 	Id         int64  `json:"id,omitempty"`
-	User       User   `json:"user"`
-	Video      Video  `json:"video"`
+	UserId     int64  `json:"user_id"`
+	User       User   `gorm:"foreignKey:UserId" json:"user"`
+	VideoId    int64  `json:"video_id"`
+	Video      Video  `gorm:"foreignKey:VideoId" json:"video"`
 	ParentId   int64  `json:"parent_id"`
 	Content    string `json:"content,omitempty"`
-	CreateDate string `json:"create_date,omitempty"`
+	CreateDate string `gorm:"column:create_time" json:"create_date,omitempty"`
 }
 
 type User struct {
 	Id            int64  `json:"id,omitempty"`
 	Name          string `json:"name,omitempty"`
-	Password      string `json:"password,omitempty"`
+	Password      string `json:"-"`
 	FollowCount   int64  `json:"follow_count,omitempty"`
 	FollowerCount int64  `json:"follower_count,omitempty"`
 	IsFollow      bool   `json:"is_follow,omitempty"`
+	Token         string `json:"-"`
 }
 
 type Message struct {

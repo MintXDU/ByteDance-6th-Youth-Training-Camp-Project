@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"github.com/RaymondCode/simple-demo/dao"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
@@ -10,11 +11,12 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type CommentListResponse struct {
 	dao.Response
-	CommentList []dao.Comment `json:"comment_list,omitempty"`
+	CommentList []dao.Comment `json:"comment_list"`
 }
 
 type CommentActionResponse struct {
@@ -32,7 +34,7 @@ func CheckUserState(c *gin.Context, db *gorm.DB) (u *dao.User, err error) {
 		return nil, errors.New("用户未登录")
 	}
 	var user dao.User
-	res := db.Where("token = ?", token).First(&user)
+	res := db.Model(&dao.User{}).Where("token = ?", token).First(&user)
 	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		// 数据库根据token未查询到用户
 		c.JSON(http.StatusOK, CommentActionResponse{
@@ -55,10 +57,15 @@ func CommentAction(c *gin.Context) {
 	db := service.Connection()
 	user, err := CheckUserState(c, db)
 	if err != nil {
+		c.JSON(http.StatusOK, dao.Response{StatusCode: -1, StatusMsg: "login"})
 		return
 	}
-	log.Println("find user with token, user:", user)
-	videoId := c.PostForm("video_id")
+	//log.Println("find user with token, user:", user)
+	videoId, err := strconv.ParseInt(c.PostForm("video_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, dao.Response{StatusCode: -1, StatusMsg: "invalid param"})
+		return
+	}
 	commentText := strings.TrimSpace(c.PostForm("comment_text"))
 	commentId := c.PostForm("comment_id")
 
@@ -93,9 +100,9 @@ func CommentAction(c *gin.Context) {
 		log.Println("发布评论")
 		var comment = dao.Comment{}
 		comment.Content = commentText
-		comment.CreateDate = "07-05"
-		comment.User = *user
-		comment.Video = video
+		comment.CreateDate = time.Now().Format(time.RFC3339)
+		comment.UserId = user.Id
+		comment.VideoId = video.Id
 		res = db.Create(&comment)
 		if res.Error != nil {
 			// 插入失败
@@ -104,6 +111,12 @@ func CommentAction(c *gin.Context) {
 			})
 			return
 		}
+		timeTemp, _ := time.Parse(time.RFC3339, comment.CreateDate)
+		comment.CreateDate = fmt.Sprintf("%02d-%02d", timeTemp.Month(), timeTemp.Day())
+		c.JSON(http.StatusOK, CommentActionResponse{
+			Response: dao.Response{StatusCode: 0},
+			Comment:  comment,
+		})
 		return
 	// 删除评论
 	case "2":
@@ -134,38 +147,25 @@ func CommentAction(c *gin.Context) {
 		})
 		return
 	}
-	//db := service.Connection()
-	//var user dao.User
-	//if user, exist := usersLoginInfo[token]; exist {
-	//	if actionType == "1" {
-	//		text := c.Query("comment_text")
-	//		c.JSON(http.StatusOK, CommentActionResponse{Response: dao.Response{StatusCode: 0},
-	//			Comment: dao.Comment{
-	//				Id:         1,
-	//				User:       user,
-	//				Content:    text,
-	//				CreateDate: "05-01",
-	//			}})
-	//		return
-	//	}
-	//	c.JSON(http.StatusOK, dao.Response{StatusCode: 0})
-	//} else {
-	//	c.JSON(http.StatusOK, dao.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-	//}
 }
 
 // CommentList all videos have same demo comment list
 func CommentList(c *gin.Context) {
-	videoId := c.Query("video_id")
-	db := service.Connection()
-	// 用户登录校验
-	_, err := CheckUserState(c, db)
+	videoId, err := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if err != nil {
+		c.JSON(http.StatusOK, dao.Response{StatusCode: -1, StatusMsg: "invalid param"})
 		return
 	}
-	var comments []dao.Comment
+	db := service.Connection()
+	// 用户登录校验
+	_, err = CheckUserState(c, db)
+	if err != nil {
+		c.JSON(http.StatusOK, dao.Response{StatusCode: -1, StatusMsg: "login"})
+		return
+	}
+	var comments = make([]dao.Comment, 10)
 	//查询一级评论列表
-	res := db.Where("video_id = ? and parent_id = 0", videoId).Find(&comments)
+	res := db.Model(&dao.Comment{}).Where("video_id = ? and parent_id = 0", videoId).Preload("User").Find(&comments)
 	if res.Error != nil {
 		log.Println("search video error:", res.Error)
 		c.JSON(http.StatusOK, CommentListResponse{
@@ -173,14 +173,14 @@ func CommentList(c *gin.Context) {
 		})
 		return
 	} else {
+		for idx, _ := range comments {
+			temp, _ := time.Parse(time.RFC3339, comments[idx].CreateDate)
+			comments[idx].CreateDate = fmt.Sprintf("%02d-%02d", temp.Month(), temp.Day())
+		}
 		c.JSON(http.StatusOK, CommentListResponse{
-			Response:    dao.Response{StatusCode: 0},
+			Response:    dao.Response{StatusCode: 0, StatusMsg: "success"},
 			CommentList: comments,
 		})
 		return
 	}
-	//c.JSON(http.StatusOK, CommentListResponse{
-	//	Response:    dao.Response{StatusCode: 0},
-	//	CommentList: DemoComments,
-	//})
 }
