@@ -25,12 +25,18 @@ type Comment struct {
 }
 
 type User struct {
-	Id            int64  `json:"id,omitempty"`
-	Name          string `json:"name,omitempty"`
-	Password      string `json:"password,omitempty"`
-	FollowCount   int64  `json:"follow_count,omitempty"`
-	FollowerCount int64  `json:"follower_count,omitempty"`
-	IsFollow      bool   `json:"is_follow,omitempty"`
+	Id              int64  `json:"id,omitempty"`
+	Name            string `json:"name,omitempty"`
+	Password        string `json:"password,omitempty"`
+	FollowCount     int64  `json:"follow_count,omitempty"`
+	FollowerCount   int64  `json:"follower_count,omitempty"`
+	IsFollow        bool   `json:"is_follow,omitempty"`
+	avatar          string `json:"avatar,omitempty"` //用户头像
+	BackgroundImage string `json:"background_image,omitempty"`
+	Signature       string `json:"signature,omitempty"`
+	TotalFavorited  string `json:"totalFavorited,omitempty"`
+	WorkCount       int64  `json:"workCount,omitempty"`
+	FavoriteCount   int64  `json:"favorite_Count,omitempty"`
 }
 
 type Message struct {
@@ -48,4 +54,15 @@ type MessageSendEvent struct {
 type MessagePushEvent struct {
 	FromUserId int64  `json:"user_id,omitempty"`
 	MsgContent string `json:"msg_content,omitempty"`
+}
+
+type Follow struct {
+	UserId     int64 `json:"user_id,omitempty"`
+	FollowerId int64 `json:"follow_id,omitempty"`
+}
+
+type Friend struct {
+	UserId     int64 `json:"userId,omitempty"`
+	FriendID   int64 `json:"friendID,omitempty"`
+	FriendName int64 `json:"friend_name,omitempty"`
 }
