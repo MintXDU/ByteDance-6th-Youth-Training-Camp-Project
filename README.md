@@ -32,8 +32,8 @@ go build && ./simple-demo
 | --- | --- | --- | --- |
 | /douyin/relation/action/ | 关注操作 | 否 |  |
 | /douyin/relation/follow/list/ | 关注列表 | 否 |  |
-| /douyin/relation/follower/list/ | 粉丝列表 | 否 |  |
-| /douyin/relation/friend/list/ | 好友列表 | 否 |  |
+| /douyin/relation/follower/list/ | 粉丝列表 | 是 | ssccww |
+| /douyin/relation/friend/list/ | 好友列表 | 是 | ssccww |
 | /douyin/message/action/ | 发送消息 | 否 |  |
 | /douyin/message/chat/ | 聊天记录 | 否 |  |
 
