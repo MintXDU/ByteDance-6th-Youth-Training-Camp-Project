@@ -15,6 +15,7 @@ type Video struct {
 	CommentCount   int64  `json:"comment_count,omitempty"`
 	IsFavorite     bool   `json:"is_favorite,omitempty"`
 	SubmissionTime string `json:"submission_time,omitempty"`
+	Title		   string `json:"title,omitempty"`	
 }
 
 type Comment struct {
@@ -48,4 +49,10 @@ type MessageSendEvent struct {
 type MessagePushEvent struct {
 	FromUserId int64  `json:"user_id,omitempty"`
 	MsgContent string `json:"msg_content,omitempty"`
+}
+
+type Favorite struct {
+	Id			int64 `json:"id"`
+	UserId 		int64 `json:"user_id"`
+	VideoId 	int64 `json:"video_id"`
 }

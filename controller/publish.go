@@ -65,10 +65,34 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
+	token := c.Query("token")
+	userID, err := strconv.Atoi(c.Query("user_id"))
+	
+	if err != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: dao.Response{StatusCode: 1, StatusMsg: "user_id format error  " + err.Error()},
+		})
+		return 
+	}
+
+	db := service.Connection()
+	var user dao.User
+
+	if result := db.Where("name = ?", token).First(&user); result.Error != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: dao.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		})
+		return
+	}
+
+	var videos = []dao.Video{}
+	db.Where("user_id = ?", userID).Order("submission_time desc").Preload("Author").Find(&videos)
+
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: dao.Response{
 			StatusCode: 0,
+			StatusMsg:  "success",
 		},
-		VideoList: DemoVideos,
+		VideoList: videos,
 	})
 }
